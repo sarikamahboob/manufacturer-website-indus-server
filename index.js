@@ -4,7 +4,7 @@ const app = express();
 var jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 app.use(cors());
 app.use(express.json());
@@ -36,6 +36,7 @@ async function run() {
   try {
     await client.connect();
     const partsCollection = client.db("indus").collection("parts");
+    const userCollection = client.db("indus").collection("users");
 
     app.post("/login", async (req, res) => {
       const user = req.body;
@@ -50,6 +51,68 @@ async function run() {
       const cursor = partsCollection.find(query);
       const parts = await cursor.toArray();
       res.send(parts);
+    });
+
+    app.get("/parts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const part = await partsCollection.findOne(query);
+      res.send(part);
+    });
+
+    app.put("/parts/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateQuantity = req.body;
+      console.log(updateQuantity);
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: updateQuantity.quantity,
+        },
+      };
+      const result = await partsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.get("/user", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const cursor = userCollection.find(query);
+      const user = await cursor.toArray();
+      res.send(user);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const updateUser = req.body;
+      console.log(updateUser);
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          address: updateUser.address,
+          education: updateUser.education,
+          number: updateUser.number,
+          linkedin: updateUser.linkedin,
+        },
+      };
+      const result = await partsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
   } finally {
   }
