@@ -37,6 +37,7 @@ async function run() {
     await client.connect();
     const partsCollection = client.db("indus").collection("parts");
     const userCollection = client.db("indus").collection("users");
+    const orderCollection = client.db("indus").collection("orders");
 
     app.post("/login", async (req, res) => {
       const user = req.body;
@@ -107,11 +108,13 @@ async function run() {
           linkedin: updateUser.linkedin,
         },
       };
-      const result = await partsCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    app.post("/orders", async (req, res) => {
+      const orders = req.body;
+      const result = await orderCollection.insertOne(orders);
       res.send(result);
     });
   } finally {
