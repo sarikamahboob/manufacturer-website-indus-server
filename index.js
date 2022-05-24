@@ -102,6 +102,19 @@ async function run() {
       res.send(users);
     });
 
+    app.get("/users", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = userCollection.find(query);
+        const user = await cursor.toArray();
+        res.send(user);
+      } else {
+        res.status(403).send({ message: "Forbidden Access" });
+      }
+    });
+
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const updateUser = req.body;
@@ -161,6 +174,18 @@ async function run() {
     //   );
     //   res.send(result);
     // });
+
+    app.get("/allorder", verifyJWT, verifyAdmin, async (req, res) => {
+      const orders = await orderCollection.find().toArray();
+      res.send(orders);
+    });
+
+    app.delete("/allorder/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const orders = await orderCollection.deleteOne(query);
+      res.send(orders);
+    });
 
     app.get("/orders", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
