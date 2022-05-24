@@ -194,6 +194,19 @@ async function run() {
       res.send(orders);
     });
 
+    app.patch("/allorder/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: "approved",
+        },
+      };
+
+      const updatedOrders = await orderCollection.updateOne(query, updatedDoc);
+      res.send(updatedOrders);
+    });
+
     app.delete("/allorder/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
