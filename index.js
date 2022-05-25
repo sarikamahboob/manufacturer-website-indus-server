@@ -105,13 +105,6 @@ async function run() {
       res.send(result);
     });
 
-    // app.delete("/parts/:id", verifyJWT, async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const parts = await partsCollection.deleteOne(query);
-    //   res.send(parts);
-    // });
-
     app.delete("/parts/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
