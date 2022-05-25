@@ -183,8 +183,13 @@ async function run() {
 
     app.post("/orders", async (req, res) => {
       const orders = req.body;
+      const query = { name: orders.name, email: orders.email };
+      const exists = await orderCollection.findOne(query);
+      if (exists) {
+        return res.send({ success: false, orders: exists });
+      }
       const result = await orderCollection.insertOne(orders);
-      res.send(result);
+      res.send({ success: true, result });
     });
 
     // app.put("/orders/:email", async (req, res) => {
