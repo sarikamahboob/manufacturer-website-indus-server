@@ -73,7 +73,7 @@ async function run() {
       res.send(parts);
     });
 
-    app.post("/parts", verifyAdmin, async (req, res) => {
+    app.post("/parts", async (req, res) => {
       const parts = req.body;
       const result = await partsCollection.insertOne(parts);
       res.send(result);
@@ -118,7 +118,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/user", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/user", verifyJWT, async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
     });
@@ -136,7 +136,7 @@ async function run() {
       }
     });
 
-    app.put("/user/:email", verifyAdmin, async (req, res) => {
+    app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const updateUser = req.body;
       console.log(updateUser);
