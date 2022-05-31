@@ -275,5 +275,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Indus app listening on port ${port}`);
+  console.log(`Indus app listening on port: ${port}`);
 });
